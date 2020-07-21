@@ -231,6 +231,11 @@ func (n *NodeGroup) Autoprovisioned() bool {
 	return false
 }
 
+// CanProvideCapacity not implemented
+func (n *NodeGroup) CanProvideCapacity() (bool, error) {
+	return false, cloudprovider.ErrNotImplemented
+}
+
 // toInstances converts a slice of *godo.KubernetesNode to
 // cloudprovider.Instance
 func toInstances(nodes []*godo.KubernetesNode) []cloudprovider.Instance {

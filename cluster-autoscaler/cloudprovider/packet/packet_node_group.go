@@ -293,3 +293,8 @@ func (ng *packetNodeGroup) MinSize() int {
 func (ng *packetNodeGroup) TargetSize() (int, error) {
 	return *ng.targetSize, nil
 }
+
+// CanProvideCapacity not implemented
+func (ng *packetNodeGroup) CanProvideCapacity() (bool, error) {
+	return false, cloudprovider.ErrNotImplemented
+}

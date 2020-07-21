@@ -127,6 +127,11 @@ func (as *AgentPool) Autoprovisioned() bool {
 	return false
 }
 
+// CanProvideCapacity not implemented
+func (as *AgentPool) CanProvideCapacity() (bool, error) {
+	return false, cloudprovider.ErrNotImplemented
+}
+
 // MaxSize returns maximum size of the node group.
 func (as *AgentPool) MaxSize() int {
 	return as.maxSize

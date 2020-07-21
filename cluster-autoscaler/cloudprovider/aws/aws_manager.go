@@ -267,6 +267,7 @@ func (m *AwsManager) forceRefresh() error {
 	}
 	m.lastRefresh = time.Now()
 	klog.V(2).Infof("Refreshed ASG list, next refresh after %v", m.lastRefresh.Add(refreshInterval))
+
 	return nil
 }
 
@@ -329,6 +330,10 @@ func (m *AwsManager) getAsgTemplate(asg *asg) (*asgTemplate, error) {
 		}, nil
 	}
 	return nil, fmt.Errorf("ASG %q uses the unknown EC2 instance type %q", asg.Name, instanceTypeName)
+}
+
+func (m *AwsManager) canProvideCapacity(asg *asg) bool {
+	return m.asgCache.canProvideCapacity(asg)
 }
 
 func (m *AwsManager) buildInstanceType(asg *asg) (string, error) {

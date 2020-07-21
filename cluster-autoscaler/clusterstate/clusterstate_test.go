@@ -834,3 +834,34 @@ func TestScaleUpFailures(t *testing.T) {
 func newBackoff() backoff.Backoff {
 	return backoff.NewIdBasedExponentialBackoff(InitialNodeGroupBackoffDuration, MaxNodeGroupBackoffDuration, NodeGroupBackoffResetTimeout)
 }
+
+func TestCanProvideCapacity(t *testing.T) {
+	now := time.Now()
+
+	provider := testprovider.NewTestCloudProvider(nil, nil)
+	provider.AddNodeGroup("ng1", 0, 10, 0)
+	provider.AddNodeGroup("ng2", 0, 10, 0)
+	assert.NotNil(t, provider)
+
+	fakeClient := &fake.Clientset{}
+	fakeLogRecorder, _ := utils.NewStatusMapRecorder(fakeClient, "kube-system", kube_record.NewFakeRecorder(5), false)
+	clusterstate := NewClusterStateRegistry(provider, ClusterStateRegistryConfig{}, fakeLogRecorder, newBackoff())
+
+	failures := clusterstate.GetScaleUpFailures()
+	assert.Equal(t, map[string][]ScaleUpFailure{
+		"ng1": {
+			{NodeGroup: provider.GetNodeGroup("ng1"), Reason: metrics.Timeout, Time: now},
+			{NodeGroup: provider.GetNodeGroup("ng1"), Reason: metrics.APIError, Time: now.Add(time.Minute)},
+		},
+		"ng2": {
+			{NodeGroup: provider.GetNodeGroup("ng2"), Reason: metrics.Timeout, Time: now},
+		},
+	}, failures)
+
+	clusterstate.clearScaleUpFailures()
+	assert.Empty(t, clusterstate.GetScaleUpFailures())
+}
+
+func newBackoff() backoff.Backoff {
+	return backoff.NewIdBasedExponentialBackoff(InitialNodeGroupBackoffDuration, MaxNodeGroupBackoffDuration, NodeGroupBackoffResetTimeout)
+}

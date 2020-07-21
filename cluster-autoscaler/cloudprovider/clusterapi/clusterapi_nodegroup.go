@@ -274,6 +274,11 @@ func (ng *nodegroup) Autoprovisioned() bool {
 	return false
 }
 
+// CanProvideCapacity not implemented
+func (ng *nodegroup) CanProvideCapacity() (bool, error) {
+	return false, cloudprovider.ErrNotImplemented
+}
+
 func newNodegroupFromMachineSet(controller *machineController, machineSet *MachineSet) (*nodegroup, error) {
 	scalableResource, err := newMachineSetScalableResource(controller, machineSet)
 	if err != nil {

@@ -428,6 +428,16 @@ func (csr *ClusterStateRegistry) IsNodeGroupSafeToScaleUp(nodeGroup cloudprovide
 	if !csr.IsNodeGroupHealthy(nodeGroup.Id()) {
 		return false
 	}
+
+	canProvideCapacity, err := nodeGroup.CanProvideCapacity()
+	if err != nil && err != cloudprovider.ErrNotImplemented {
+		klog.Infof("NodeGroup %v did not implement CanProvideCapacity", nodeGroup.Id())
+		return false
+	}
+	if !canProvideCapacity {
+		klog.Warningf("NodeGroup %v cannot provide capacity", nodeGroup.Id())
+		return false
+	}
 	return !csr.backoff.IsBackedOff(nodeGroup, csr.nodeInfosForGroups[nodeGroup.Id()], now)
 }
 

@@ -296,6 +296,11 @@ func (nodeGroup *NodeGroup) Autoprovisioned() bool {
 	return false
 }
 
+// CanProvideCapacity not implemented
+func (nodeGroup *NodeGroup) CanProvideCapacity() (bool, error) {
+	return false, cloudprovider.ErrNotImplemented
+}
+
 func buildNodeGroup(value string, kubemarkController *kubemark.KubemarkController) (*NodeGroup, error) {
 	spec, err := dynamic.SpecFromString(value, true)
 	if err != nil {

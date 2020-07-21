@@ -125,6 +125,11 @@ func (scaleSet *ScaleSet) Create() (cloudprovider.NodeGroup, error) {
 	return nil, cloudprovider.ErrAlreadyExist
 }
 
+// CanProvideCapacity not implemented
+func (scaleSet *ScaleSet) CanProvideCapacity() (bool, error) {
+	return false, cloudprovider.ErrNotImplemented
+}
+
 // Delete deletes the node group on the cloud provider side.
 // This will be executed only for autoprovisioned node groups, once their size drops to 0.
 func (scaleSet *ScaleSet) Delete() error {

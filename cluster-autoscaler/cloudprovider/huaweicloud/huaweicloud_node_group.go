@@ -18,12 +18,13 @@ package huaweicloud
 
 import (
 	"fmt"
+	"sync"
+	"time"
+
 	apiv1 "k8s.io/api/core/v1"
 	"k8s.io/autoscaler/cluster-autoscaler/cloudprovider"
 	klog "k8s.io/klog/v2"
 	schedulerframework "k8s.io/kubernetes/pkg/scheduler/framework/v1alpha1"
-	"sync"
-	"time"
 )
 
 const updateWaitTime = 10 * time.Second
@@ -328,4 +329,9 @@ func (ng *NodeGroup) Delete() error {
 // was created by CA and can be deleted when scaled to 0. Currently always returns false.
 func (ng *NodeGroup) Autoprovisioned() bool {
 	return false
+}
+
+// CanProvideCapacity not implemented
+func (ng *NodeGroup) CanProvideCapacity() (bool, error) {
+	return false, cloudprovider.ErrNotImplemented
 }

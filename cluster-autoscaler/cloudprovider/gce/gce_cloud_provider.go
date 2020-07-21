@@ -327,6 +327,11 @@ func (mig *gceMig) Autoprovisioned() bool {
 	return false
 }
 
+// Delete deletes the node group on the cloud provider side.
+func (mig *gceMig) CanProvideCapacity() (bool, error) {
+	return false, cloudprovider.ErrNotImplemented
+}
+
 // TemplateNodeInfo returns a node template for this node group.
 func (mig *gceMig) TemplateNodeInfo() (*schedulerframework.NodeInfo, error) {
 	node, err := mig.gceManager.GetMigTemplateNode(mig)

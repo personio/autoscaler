@@ -331,6 +331,11 @@ func (ng *AwsNodeGroup) TemplateNodeInfo() (*schedulerframework.NodeInfo, error)
 	return nodeInfo, nil
 }
 
+// CanProvideCapacity returns true if the node group can provide capacity
+func (ng *AwsNodeGroup) CanProvideCapacity() (bool, error) {
+	return ng.awsManager.canProvideCapacity(ng.asg), nil
+}
+
 // BuildAWS builds AWS cloud provider, manager etc.
 func BuildAWS(opts config.AutoscalingOptions, do cloudprovider.NodeGroupDiscoveryOptions, rl *cloudprovider.ResourceLimiter) cloudprovider.CloudProvider {
 	var config io.ReadCloser

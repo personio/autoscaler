@@ -438,3 +438,8 @@ func (agentPool *AKSAgentPool) Delete() error {
 func (agentPool *AKSAgentPool) Autoprovisioned() bool {
 	return false
 }
+
+// CanProvideCapacity not implemented
+func (agentPool *AKSAgentPool) CanProvideCapacity() (bool, error) {
+	return false, cloudprovider.ErrNotImplemented
+}

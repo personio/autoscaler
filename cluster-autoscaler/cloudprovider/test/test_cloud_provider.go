@@ -432,6 +432,11 @@ func (tng *TestNodeGroup) Autoprovisioned() bool {
 	return tng.autoprovisioned
 }
 
+// CanProvideCapacity not implemented
+func (tng *TestNodeGroup) CanProvideCapacity() (bool, error) {
+	return false, cloudprovider.ErrNotImplemented
+}
+
 // TemplateNodeInfo returns a node template for this node group.
 func (tng *TestNodeGroup) TemplateNodeInfo() (*schedulerframework.NodeInfo, error) {
 	if tng.cloudProvider.machineTemplates == nil {

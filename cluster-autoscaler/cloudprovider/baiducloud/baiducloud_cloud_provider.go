@@ -391,3 +391,8 @@ func (asg *Asg) Delete() error {
 func (asg *Asg) Autoprovisioned() bool {
 	return false
 }
+
+// CanProvideCapacity not implemented
+func (asg *Asg) CanProvideCapacity() (bool, error) {
+	return false, cloudprovider.ErrNotImplemented
+}

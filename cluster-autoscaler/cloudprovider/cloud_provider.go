@@ -169,6 +169,8 @@ type NodeGroup interface {
 	// Autoprovisioned returns true if the node group is autoprovisioned. An autoprovisioned group
 	// was created by CA and can be deleted when scaled to 0.
 	Autoprovisioned() bool
+
+	CanProvideCapacity() (bool, error)
 }
 
 // Instance represents a cloud-provider node. The node does not necessarily map to k8s node

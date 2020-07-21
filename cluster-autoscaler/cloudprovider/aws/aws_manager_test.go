@@ -291,6 +291,16 @@ func TestFetchExplicitAsgs(t *testing.T) {
 			}}, false)
 	}).Return(nil)
 
+	s.On("DescribeScalingActivitiesPages",
+		&autoscaling.DescribeScalingActivitiesInput{
+			AutoScalingGroupName: aws.String("coolasg"),
+		},
+		mock.AnythingOfType("func(*autoscaling.DescribeScalingActivitiesOutput, bool) bool"),
+	).Run(func(args mock.Arguments) {
+		fn := args.Get(1).(func(*autoscaling.DescribeScalingActivitiesOutput, bool) bool)
+		fn(testNamedDescribeScalingActivitiesOutput("coolasg"), false)
+	}).Return(nil)
+
 	do := cloudprovider.NodeGroupDiscoveryOptions{
 		// Register the same node group twice with different max nodes.
 		// The intention is to test that the asgs.Register method will update
@@ -533,6 +543,16 @@ func TestFetchAutoAsgs(t *testing.T) {
 				DesiredCapacity:      aws.Int64(int64(min)),
 			}}}, false)
 	}).Return(nil).Twice()
+
+	s.On("DescribeScalingActivitiesPages",
+		&autoscaling.DescribeScalingActivitiesInput{
+			AutoScalingGroupName: aws.String("coolasg"),
+		},
+		mock.AnythingOfType("func(*autoscaling.DescribeScalingActivitiesOutput, bool) bool"),
+	).Run(func(args mock.Arguments) {
+		fn := args.Get(1).(func(*autoscaling.DescribeScalingActivitiesOutput, bool) bool)
+		fn(testNamedDescribeScalingActivitiesOutput("coolasg"), false)
+	}).Return(nil)
 
 	do := cloudprovider.NodeGroupDiscoveryOptions{
 		NodeGroupAutoDiscoverySpecs: []string{fmt.Sprintf("asg:tag=%s", strings.Join(tags, ","))},
