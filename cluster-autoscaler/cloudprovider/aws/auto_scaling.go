@@ -214,40 +214,29 @@ func (m autoScalingWrapper) populateLaunchConfigurationInstanceTypeCache(autosca
 
 func (m *autoScalingWrapper) getLastLaunchFailure(asg *autoscaling.Group) (*autoscaling.Activity, error) {
 
-	klog.V(4).Infof("getLastLaunchFailure called for %s", *asg.AutoScalingGroupName)
-
-	activities := make([]*autoscaling.Activity, 0)
-	launchFailures := make([]*autoscaling.Activity, 0)
+	var lastLaunchFailure *autoscaling.Activity
 
 	input := &autoscaling.DescribeScalingActivitiesInput{
 		AutoScalingGroupName: asg.AutoScalingGroupName,
-		MaxRecords:           aws.Int64(1),
 	}
 
 	if err := m.DescribeScalingActivitiesPages(input, func(output *autoscaling.DescribeScalingActivitiesOutput, _ bool) bool {
-		klog.V(4).Infof("DescribeScalingActivitiesPages returned a page")
-		activities = append(activities, output.Activities...)
 
-		// we only need the latest one
-		return false
+		for _, activity := range output.Activities {
+			if *activity.StatusCode == autoscaling.ScalingActivityStatusCodeFailed {
+				klog.V(4).Infof("Last lauch failure of ASG %s: %v", *asg.AutoScalingGroupName, *activity)
+				lastLaunchFailure = activity
+				return false
+			}
+		}
+
+		// we only look at the past hour
+		return time.Since(*output.Activities[len(output.Activities)-1].EndTime) < time.Hour*1
 	}); err != nil {
 		return nil, err
 	}
 
-	for _, activity := range activities {
-		if *activity.StatusCode == "Failed" {
-			launchFailures = append(launchFailures, activity)
-		}
-	}
-
-	//klog.V(4).Infof("Scaling activities of ASG %s: %v", asg, activities)
-	klog.V(4).Infof("Launch failures of ASG %s: %v", *asg.AutoScalingGroupName, launchFailures)
-
-	if len(launchFailures) > 0 {
-		return launchFailures[0], nil
-	}
-
-	return nil, nil
+	return lastLaunchFailure, nil
 }
 
 func (m *autoScalingWrapper) getAutoscalingGroupNamesByTags(kvs map[string]string) ([]string, error) {
